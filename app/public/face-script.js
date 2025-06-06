@@ -4,7 +4,7 @@ const video = document.getElementById('myvideo');
 const canvas = document.getElementById('overlay');
 const ctx = canvas.getContext('2d');
 
-const labels = ['yusei', 'yunechan']; // users.username と一致すること！
+const labels = ['鈴木', '山本'];
 
 // 出勤状態 (true = 出勤, false = 退勤)
 const attendance = new Map();
@@ -16,7 +16,7 @@ const TOGGLE_COOLDOWN = 50000; // ミリ秒（例：50秒）
 
 const statusSpan = document.getElementById('status');
 
-// ⭐ 顔認識用モデル読み込み
+//  顔認識用モデル読み込み
 async function loadModels() {
     const MODEL_URL = './models';
     await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
@@ -35,7 +35,7 @@ function updateAttendanceList() {
     });
 }
 
-// ⭐ 最新 punch_type を取得して attendance Map を初期化
+//  punch_type を取得して attendance Map を初期化
 async function initializeAttendance() {
     for (const label of labels) {
         try {
@@ -59,7 +59,7 @@ async function initializeAttendance() {
     }
 }
 
-// ⭐ ラベル画像（教師データ）読み込み
+// ラベル画像（教師データ）読み込み
 async function loadLabeledDescriptors() {
     const labeledDescriptors = [];
 
@@ -82,7 +82,7 @@ async function loadLabeledDescriptors() {
     return labeledDescriptors;
 }
 
-// ⭐ メイン開始
+// メイン開始
 async function start() {
     await loadModels();
     await initializeAttendance();
@@ -136,7 +136,7 @@ async function start() {
                     // ステータス表示を更新
                     statusSpan.textContent = newState ? '出勤' : '退勤';
 
-                    // 🔥 punch 送信！
+                    // punch 送信
                     fetch('/api/punch', {
                         method: 'POST',
                         headers: {
