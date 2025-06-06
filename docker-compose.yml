@@ -1,0 +1,35 @@
+# docker-compose.yml
+version: '3.8'
+
+services:
+  web:
+    build: .
+    container_name: attendance-web
+    ports:
+      - "80:3000"   # ← ALB から HTTP:80 で流す用に変更✨
+    volumes:
+      - .:/usr/src/app
+    environment:
+      - TZ=Asia/Tokyo
+    depends_on:
+      - db
+    command: npm run dev
+    restart: always
+
+  db:
+    image: mysql:8.0
+    container_name: attendance-mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: Arigyncvaimds2229
+      MYSQL_DATABASE: attendance_db
+      MYSQL_USER: y-furusato
+      MYSQL_PASSWORD: dbdbaimds223
+      TZ: Asia/Tokyo
+    volumes:
+      - db-data:/var/lib/mysql
+    restart: always
+
+volumes:
+  db-data:

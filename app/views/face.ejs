@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>顔認証 - 出退勤管理システム</title>
+
+    <!-- Google Fonts（Roboto） -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+
+    <!-- スタイル -->
+    <link rel="stylesheet" href="/css/face-style.css">
+
+    <!-- face-api.js CDN -->
+    <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+
+    <!-- face-script.js (自作) -->
+    <script defer src="/face-script.js"></script>
+
+    <!-- ダッシュボード用改良スタイル -->
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            margin: 0;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+        }
+
+        /* ヘッダー */
+        header {
+            position: fixed;
+            /* ← 完全固定（スクロールしても残る） */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4rem;
+            background-color: #f0f0f0;
+            border-bottom: 1px solid #ccc;
+            display: flex;
+            align-items: center;
+            /* 縦中央（好みで） */
+            padding-left: 1rem;
+            /* ← 左の余白 */
+            z-index: 1000;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: bold;
+        }
+
+
+        /* レイアウト本体 */
+        .dashboard {
+            display: grid;
+            grid-template-columns: 200px 1fr 300px;
+            /* ← 左200px + 中央(残り) + 右300px */
+            width: 100%;
+            flex: 1;
+            overflow: hidden;
+            height: calc(100vh - 4rem);
+            margin-top: 4rem;
+        }
+
+
+        /* サイドバー */
+        .sidebar {
+            background-color: #fafafa;
+            border-right: 1px solid #ccc;
+            padding: 0.5rem 0.5rem 0.5rem 0;
+            /* ← 左だけ 0 にする */
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            height: 100%;
+        }
+
+
+        .sidebar button {
+            padding: 8px 12px;
+            font-size: 15px;
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .status-sidebar {
+            background-color: #fafafa;
+            border-left: 1px solid #ccc;
+            padding: 1rem;
+            overflow-y: auto;
+        }
+
+        .status-sidebar h2 {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+
+        .status-sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .status-sidebar li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #ddd;
+            font-size: 0.95rem;
+        }
+
+        .sidebar .menu-link {
+            display: block;
+            padding: 8px 12px;
+            font-size: 15px;
+            color: #333;
+            text-decoration: none;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .sidebar .menu-link:hover {
+            background-color: #e0e0e0;
+            cursor: pointer;
+        }
+
+        /* メイン */
+        .main {
+            padding: 2rem;
+            overflow-y: auto;
+
+            max-width: 800px;
+            /* ← メイン領域の幅を制限 */
+            margin: 0 auto;
+            /* ← 中央揃え！ */
+        }
+
+        .camera-section {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+
+        #video-container {
+            position: relative;
+            width: 480px;
+            height: 360px;
+            border: 2px solid #333;
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: black;
+        }
+
+        #myvideo {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        #overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .status-section {
+            text-align: center;
+            font-size: 1.2em;
+            color: #333;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ヘッダー -->
+    <header>
+        <h1>顔認証 - 出退勤管理システム</h1>
+    </header>
+
+    <!-- ダッシュボード本体 -->
+    <div class="dashboard">
+
+        <!-- サイドバー -->
+        <aside class="sidebar">
+            <h2>メニュー</h2>
+            <a href="/face" class="menu-link">顔認証</a>
+            <a href="/records" class="menu-link">出退勤履歴一覧</a>
+        </aside>
+
+        <!-- メインコンテンツ -->
+        <main class="main">
+
+            <!-- カメラ表示 -->
+            <section class="camera-section">
+                <div id="video-container">
+                    <video id="myvideo" width="480" height="360" autoplay muted></video>
+                    <canvas id="overlay" width="480" height="360"></canvas>
+                </div>
+            </section>
+
+            <!-- ステータス表示 -->
+            <section class="status-section">
+                <p>現在の状態: <span id="status">未検出</span></p>
+            </section>
+
+        </main>
+
+        <!-- 出退勤状況サイドバー -->
+        <aside class="status-sidebar">
+            <h2>出退勤状況</h2>
+            <ul id="attendance-list">
+                <!-- ここに動的にユーザー一覧が入る！ -->
+            </ul>
+        </aside>
+
+
+    </div>
+
+</body>
+
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>ログイン - 出退勤管理システム</title>
+    <link rel="stylesheet" href="/css/login-style.css">
+</head>
+
+<body>
+
+    <div class="login-wrap">
+        <div class="login-html">
+            <!-- タブ（Sign In / Sign Up 両方必要 ※ Sign Up は空でOK） -->
+            <input id="tab-1" type="radio" name="tab" class="sign-in" checked>
+            <label for="tab-1" class="tab">Sign In</label>
+
+            <input id="tab-2" type="radio" name="tab" class="sign-up">
+            <label for="tab-2" class="tab">Sign Up</label>
+
+            <div class="login-form">
+                <!-- Sign In画面 -->
+                <div class="sign-in-htm">
+                    <!-- formはここに入れる！ -->
+                    <form method="POST" action="/login">
+                        <div class="group">
+                            <label for="login_id" class="label">ユーザー名</label>
+                            <input id="login_id" name="login_id" type="text" class="input" placeholder="ユーザー名を入力">
+                        </div>
+                        <div class="group">
+                            <label for="password" class="label">パスワード</label>
+                            <input id="password" name="password" type="password" class="input" placeholder="パスワードを入力">
+                        </div>
+                        <div class="group">
+                            <input type="submit" class="button" value="ログイン">
+                        </div>
+                        <!-- エラーメッセージ表示（オプション） -->
+                        <% if (typeof errorMessage !=='undefined' && errorMessage) { %>
+                            <div style="color: #ff8888; margin-top: 10px; text-align: center;">
+                                <%= errorMessage %>
+                            </div>
+                            <% } %>
+                    </form>
+                </div>
+
+                <!-- Sign Up画面（中身空でOK、崩れ防止用） -->
+                <div class="sign-up-htm">
+                    <!-- 空でOK（非表示になる） -->
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+</body>
+
+</html>

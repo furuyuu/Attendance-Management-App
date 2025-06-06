@@ -1,0 +1,61 @@
+<!-- app/views/records.ejs -->
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>出退勤履歴</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 80%;
+            margin: 20px auto;
+        }
+
+        th,
+        td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+        }
+    </style>
+</head>
+
+<body>
+    <h1 style="text-align:center;">出退勤履歴</h1>
+
+    <table>
+        <tr>
+            <th>日時</th>
+            <th>名前</th>
+            <th>出退勤</th>
+        </tr>
+        <% records.forEach(record=> { %>
+            <tr>
+                <td>
+                    <%= new Date(record.punch_time).toLocaleString('ja-JP') %>
+                </td>
+                <td>
+                    <%= record.full_name %>
+                </td>
+                <td>
+                    <%= record.punch_type==='IN' ? '出勤' : '退勤' %>
+                </td>
+            </tr>
+            <% }); %>
+    </table>
+
+    <div style="text-align:center; margin-top:20px;">
+        <a href="/face">← 顔認証に戻る</a>
+    </div>
+</body>
+
+</html>
